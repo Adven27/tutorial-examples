@@ -14,10 +14,28 @@
     <name>batch</name>
   
     <modules>
-        <module>webserverlog</module>
-		<module>phonebilling</module>
+		<module>messagesender</module>
     </modules>
-    
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-core</artifactId>
+            <version>3.0.8.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.0</version>
+        </dependency>
+        <dependency> <!-- Only for annotations usage!!! -->
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <version>2.5.2</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
