@@ -23,6 +23,9 @@
     </issueManagement>
 
     <properties>
+        <arquillian.version>1.1.14.Final</arquillian.version>
+        <maven.test.skip>false</maven.test.skip>
+        <wildfly.version>11.0.0.Final</wildfly.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javaee.api.version>8.0</javaee.api.version>
         <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
@@ -42,7 +45,6 @@
         <glassfish.embedded.version>4.0</glassfish.embedded.version>
         <cargo.plugin.version>1.4.4</cargo.plugin.version>
         <glassfish.domain.name>domain1</glassfish.domain.name>
-        <glassfish.home>${glassfish.home.prefix}/glassfish5</glassfish.home>
         <integration.container.id>glassfish4x</integration.container.id>
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
@@ -52,56 +54,128 @@
     
     <profiles>
         <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
+            <id>wildfly-ci-managed</id>
             <properties>
-                <glassfish.home.prefix>c:/</glassfish.home.prefix>
-                <glassfish.executables.suffix>.bat</glassfish.executables.suffix>
+                <serverProfile>standalone.xml</serverProfile>
+                <serverRoot>${project.build.directory}/wildfly-${wildfly.version}</serverRoot>
             </properties>
+            <dependencies>
+                <!-- Without this exception will be thrown about missing tracef method -->
+                <dependency>
+                    <groupId>org.jboss.logging</groupId>
+                    <artifactId>jboss-logging</artifactId>
+                    <version>3.3.0.Final</version>
+                    <scope>test</scope>
+                </dependency>
+                <!-- The actual Arquillian container (server connector) -->
+                <dependency>
+                    <groupId>org.wildfly.arquillian</groupId>
+                    <artifactId>wildfly-arquillian-container-managed</artifactId>
+                    <version>2.1.0.Final</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <testResources>
+                    <testResource>
+                        <directory>src/test/resources</directory>
+                        <filtering>true</filtering>
+                    </testResource>
+                    <testResource>
+                        <directory>src/test/resources-wildfly-managed</directory>
+                        <filtering>true</filtering>
+                    </testResource>
+                </testResources>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <configuration>
+                            <skip>${maven.test.skip}</skip>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-dist</artifactId>
+                                            <version>${wildfly.version}</version>
+                                            <type>zip</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <environmentVariables>
+                                <JBOSS_HOME>${project.build.directory}/wildfly-${wildfly.version}</JBOSS_HOME>
+                            </environmentVariables>
+                            <systemPropertyVariables>
+                                <arquillian.launch>wildfly</arquillian.launch>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
+        <!--
         <profile>
-            <id>unix</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                </os>
-            </activation>
+            <id>weblogic-remote</id>
+
             <properties>
-                <glassfish.home.prefix>${user.home}</glassfish.home.prefix>
-                <glassfish.executables.suffix />
+                &lt;!&ndash; Default username/password that instructions in README.md ask to use
+                    when starting up WebLogic for the first time. Note that WebLogic does not
+                    have any default username/password of its own. &ndash;&gt;
+                <weblogicRemoteArquillian_adminUserName>admin</weblogicRemoteArquillian_adminUserName>
+                <weblogicRemoteArquillian_adminPassword>admin007</weblogicRemoteArquillian_adminPassword>
+
+                &lt;!&ndash; Default host and port when running WLS locally &ndash;&gt;
+                <weblogicRemoteArquillian_adminUrl>t3://localhost:7001</weblogicRemoteArquillian_adminUrl>
+
+                &lt;!&ndash; Default target after having installed developer zip distribution for
+                    WebLogic &ndash;&gt;
+                <weblogicRemoteArquillian_target>myserver</weblogicRemoteArquillian_target>
+                <weblogicRemoteArquillian_wlHome>SET ME</weblogicRemoteArquillian_wlHome>
             </properties>
-        </profile>
-        <profile>
-            <id>sdk</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <glassfish.home>${basedir}/../../../</glassfish.home>
-            </properties>
-        </profile>
-        <profile>
-            <id>development</id>
-            <activation>
-                <file>
-                    <exists>${basedir}/../bundle</exists>
-                </file>
-            </activation>
-            <properties>
-                <glassfish.home>${glassfish.home.prefix}/glassfish5</glassfish.home>
-            </properties>
-        </profile>
-        <profile>
-            <id>standalone</id>
-            <properties>
-                <glassfish.home>${basedir}/target/cargo/installs/glassfish</glassfish.home>
-                <cargo.maven.containerUrl>http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/latest-glassfish.zip</cargo.maven.containerUrl>
-            </properties>
-        </profile>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.arquillian.container</groupId>
+                    <artifactId>arquillian-wls-remote-12.1</artifactId>
+                    <version>1.0.1.Final</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <arquillian.launch>weblogic-remote</arquillian.launch>
+                                <wlHome>${weblogicRemoteArquillian_wlHome}</wlHome>
+                                <adminUrl>${weblogicRemoteArquillian_adminUrl}</adminUrl>
+                                <adminUserName>${weblogicRemoteArquillian_adminUserName}</adminUserName>
+                                <adminPassword>${weblogicRemoteArquillian_adminPassword}</adminPassword>
+                                <target>${weblogicRemoteArquillian_target}</target>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>-->
     </profiles>
     
     <modules>
@@ -134,7 +208,19 @@
             <layout>default</layout>
         </repository>
     </repositories>
-    
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>1.4.0.Final</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -166,36 +252,6 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
-                <inherited>true</inherited>
-                <executions>
-                    <execution>
-                        <id>deploy</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>redeploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <container>
-                        <containerId>${integration.container.id}</containerId>
-                        <type>installed</type>
-                        <home>${glassfish.home}</home>
-                    </container>
-                    <configuration>
-                        <type>existing</type>
-                        <home>${glassfish.home}/glassfish/domains</home>
-                        <properties>
-                            <cargo.glassfish.domain.name>${glassfish.domain.name}</cargo.glassfish.domain.name>
-                            <!--cargo.remote.username></cargo.remote.username-->
-                            <cargo.remote.password />
-                        </properties>
-                    </configuration>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

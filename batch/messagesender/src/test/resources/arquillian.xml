@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+    <extension qualifier="persistence-dbunit">
+        <property name="defaultDataSetFormat">YAML</property>
+    </extension>
+<!--
+    <extension qualifier="persistence">
+        <property name="defaultDataSource">java:jboss/datasources/ExampleDS</property>
+        <property name="scriptsToExecuteBeforeTest">SET REFERENTIAL_INTEGRITY FALSE;</property>
+        <property name="userTransactionJndi">java:jboss/UserTransaction</property>
+        <property name="dumpData">true</property>
+        &lt;!&ndash;<property name="dumpDirectory">/tmp/showcase</property>&ndash;&gt;
+    </extension>
+-->
+    <container qualifier="wildfly"/>
+</arquillian>
