@@ -14,4 +14,16 @@
     </extension>
 -->
     <container qualifier="wildfly"/>
+    <container qualifier="wls-remote" default="true">
+        <configuration>
+            <property name="adminUrl">${adminUrl}</property>
+            <property name="adminUserName">${adminUserName}</property>
+            <property name="adminPassword">${adminPassword}</property>
+            <property name="target">${target}</property>
+            <property name="wlHome">${wlHome}</property>
+            <property name="weblogicJarPath">${wlHome}/wlserver/server/lib/wlfullclient.jar</property>
+            <property name="jmxClientJarPath">${wlHome}/wlserver/server/lib/wljmxclient.jar</property>
+            <!--<property name="jboss.server.default.config">standalone-full.xml</property>-->
+        </configuration>
+    </container>
 </arquillian>

@@ -12,22 +12,12 @@
     <packaging>pom</packaging>
     <name>Java EE Tutorial Examples</name>
     
-    <scm>
-        <connection>scm:git:https://github.com/javaee/tutorial-examples.git</connection>
-        <developerConnection>scm:git:git@github.com:javaee/tutorial-examples.git</developerConnection>     
-    <tag>HEAD</tag>
-  </scm>
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/javaee/tutorial-examples/issues</url>
-    </issueManagement>
-
     <properties>
-        <arquillian.version>1.1.14.Final</arquillian.version>
+        <arquillian.version>1.4.0.Final</arquillian.version>
         <maven.test.skip>false</maven.test.skip>
         <wildfly.version>11.0.0.Final</wildfly.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javaee.api.version>8.0</javaee.api.version>
+        <javaee.api.version>6.0</javaee.api.version>
         <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
         <maven.source.plugin.version>2.2.1</maven.source.plugin.version>
         <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
@@ -40,12 +30,7 @@
         <maven.license.plugin.version>1.10.b1</maven.license.plugin.version>
         <maven.release.plugin.version>2.5.2</maven.release.plugin.version>
         <maven.exec.plugin.version>1.2.1</maven.exec.plugin.version>
-        <junit.version>4.11</junit.version>
         <eclipselink.version>2.5.0</eclipselink.version>
-        <glassfish.embedded.version>4.0</glassfish.embedded.version>
-        <cargo.plugin.version>1.4.4</cargo.plugin.version>
-        <glassfish.domain.name>domain1</glassfish.domain.name>
-        <integration.container.id>glassfish4x</integration.container.id>
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.source.skip>true</maven.source.skip>
@@ -67,11 +52,21 @@
                     <version>3.3.0.Final</version>
                     <scope>test</scope>
                 </dependency>
-                <!-- The actual Arquillian container (server connector) -->
                 <dependency>
                     <groupId>org.wildfly.arquillian</groupId>
                     <artifactId>wildfly-arquillian-container-managed</artifactId>
                     <version>2.1.0.Final</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                    <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+                    <scope>test</scope>
+                    <type>jar</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                    <artifactId>shrinkwrap-resolver-impl-maven-archive</artifactId>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -129,27 +124,31 @@
                 </plugins>
             </build>
         </profile>
-        <!--
+
         <profile>
             <id>weblogic-remote</id>
 
             <properties>
-                &lt;!&ndash; Default username/password that instructions in README.md ask to use
-                    when starting up WebLogic for the first time. Note that WebLogic does not
-                    have any default username/password of its own. &ndash;&gt;
-                <weblogicRemoteArquillian_adminUserName>admin</weblogicRemoteArquillian_adminUserName>
-                <weblogicRemoteArquillian_adminPassword>admin007</weblogicRemoteArquillian_adminPassword>
-
-                &lt;!&ndash; Default host and port when running WLS locally &ndash;&gt;
+                <weblogicRemoteArquillian_adminUserName>dev</weblogicRemoteArquillian_adminUserName>
+                <weblogicRemoteArquillian_adminPassword>P4ogW#kb7N</weblogicRemoteArquillian_adminPassword>
                 <weblogicRemoteArquillian_adminUrl>t3://localhost:7001</weblogicRemoteArquillian_adminUrl>
-
-                &lt;!&ndash; Default target after having installed developer zip distribution for
-                    WebLogic &ndash;&gt;
                 <weblogicRemoteArquillian_target>myserver</weblogicRemoteArquillian_target>
-                <weblogicRemoteArquillian_wlHome>SET ME</weblogicRemoteArquillian_wlHome>
+                <weblogicRemoteArquillian_wlHome>D:/work/wls12130</weblogicRemoteArquillian_wlHome>
             </properties>
 
             <dependencies>
+                <dependency>
+                    <groupId>LIB_NAME</groupId>
+                    <artifactId>LIB_NAME</artifactId>
+                    <version>1.0.0</version>
+                    <scope>system</scope>
+                    <systemPath>d:/work/wls12130/wlserver/server/lib/wlfullclient.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.arquillian.protocol</groupId>
+                    <artifactId>arquillian-protocol-servlet</artifactId>
+                    <scope>test</scope>
+                </dependency>
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
                     <artifactId>arquillian-wls-remote-12.1</artifactId>
@@ -159,12 +158,22 @@
             </dependencies>
 
             <build>
+                <testResources>
+                    <testResource>
+                        <directory>src/test/resources</directory>
+                        <filtering>true</filtering>
+                    </testResource>
+                    <testResource>
+                        <directory>src/test/resources-wls-remote</directory>
+                        <filtering>true</filtering>
+                    </testResource>
+                </testResources>
                 <plugins>
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <systemPropertyVariables>
-                                <arquillian.launch>weblogic-remote</arquillian.launch>
+                                <arquillian.launch>wls-remote</arquillian.launch>
                                 <wlHome>${weblogicRemoteArquillian_wlHome}</wlHome>
                                 <adminUrl>${weblogicRemoteArquillian_adminUrl}</adminUrl>
                                 <adminUserName>${weblogicRemoteArquillian_adminUserName}</adminUserName>
@@ -175,48 +184,25 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>-->
+        </profile>
     </profiles>
     
     <modules>
-        <module>archetypes</module>
         <module>batch</module>
-        <module>case-studies</module>
-        <module>cdi</module>
-        <module>concurrency</module>
-        <module>connectors</module>
-        <module>ejb</module>
-        <module>jaxrs</module>
-        <module>jaxws</module>
-        <module>jms</module>
-        <module>persistence</module>
-        <module>security</module>
-        <module>web</module>
     </modules>
     
-    <repositories>
-        <repository>
-            <id>snapshot-repository.java.net</id>
-            <name>Java.net Snapshot Repository for Maven</name>
-            <url>https://maven.java.net/content/repositories/staging/</url>
-            <layout>default</layout>
-        </repository>
-        <repository>
-            <id>releases-repository.java.net</id>
-            <name>Java.net releases Repository for Maven</name>
-            <url>https://maven.java.net/content/repositories/releases/</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>1.4.0.Final</version>
+                <version>${arquillian.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-container-test-api</artifactId>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -243,11 +229,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
                     <version>${maven.war.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.cargo</groupId>
-                    <artifactId>cargo-maven2-plugin</artifactId>
-                    <version>${cargo.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -299,13 +280,33 @@
         </plugins>
     </build>
     
-    
     <dependencies>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>${javaee.api.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-persistence-dbunit</artifactId>
+            <version>1.0.0.Alpha7</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+            <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
         </dependency>
     </dependencies>
 
