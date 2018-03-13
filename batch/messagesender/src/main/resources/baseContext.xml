@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:batch="http://www.springframework.org/schema/batch"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                     http://www.springframework.org/schema/beans/spring-beans.xsd
                     http://www.springframework.org/schema/batch
                     http://www.springframework.org/schema/batch/spring-batch.xsd
                     http://www.springframework.org/schema/jee
-                    http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
-					http://www.springframework.org/schema/jdbc
-					http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+                    http://www.springframework.org/schema/jee/spring-jee-3.0.xsd">
 
-    <batch:job-repository data-source="dataSource" id="jobRepository"
-                          transaction-manager="transactionManager" table-prefix="${batch.table.prefix}"/>
+    <jee:jndi-lookup id="dataSource" jndi-name="${batch.jndi}" expected-type="javax.sql.DataSource"/>
+
+    <batch:job-repository id="jobRepository"
+                          isolation-level-for-create="READ_COMMITTED"
+                          table-prefix="${batch.table.prefix}"/>
 
     <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
         <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+
+    <bean id="transactionManager"
+          class="org.springframework.transaction.jta.WebLogicJtaTransactionManager">
     </bean>
 
     <bean id="batchJobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
@@ -28,13 +32,6 @@
     </bean>
 
     <bean id="jobExplorer" class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/svat/mobilebank"/>
-
-    <bean id="transactionManager"
-          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 

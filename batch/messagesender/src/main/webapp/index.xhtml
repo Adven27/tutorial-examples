@@ -1,18 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!--
-
-    Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
-
-    You may not modify, use, reproduce, or distribute this software except in
-    compliance with  the terms of the License at:
-    https://github.com/javaee/tutorial-examples/LICENSE.txt
-
--->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>The Phone Billing Example Application</title>
         <h:outputStylesheet library="css" name="default.css"/>
@@ -21,9 +13,9 @@
         <h1>The Phone Billing Example Application</h1>
         <h2>Log file</h2>
         <p>The batch job analyzes the following log file:</p>
+        <h:link value="Foo" outcome="jobstarted" />
         <h:form>
-            <h:commandButton value="Start Batch Job" 
-                             action="#{jsfBean.startBatchJob()}" />
+            <p:commandButton type="submit" value="Start Batch Job" action="#{index.startBatchJob()}" />
         </h:form>
     </body>
 </html>
