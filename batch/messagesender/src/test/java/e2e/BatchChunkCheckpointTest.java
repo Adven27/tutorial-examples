@@ -1,11 +1,9 @@
 package e2e;
 
-import javaeetutorial.batch.messagesender.items.Message;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.persistence.ShouldMatchDataSet;
 import org.jboss.arquillian.persistence.UsingDataSet;
-import org.jboss.arquillian.transaction.api.annotation.TransactionMode;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -16,12 +14,6 @@ import javax.batch.operations.JobOperator;
 import javax.batch.runtime.JobExecution;
 import javax.batch.runtime.Metric;
 import javax.batch.runtime.StepExecution;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
-import javax.transaction.UserTransaction;
-import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
