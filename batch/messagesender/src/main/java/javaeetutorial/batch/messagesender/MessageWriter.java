@@ -2,7 +2,6 @@ package javaeetutorial.batch.messagesender;
 
 import javaeetutorial.batch.messagesender.items.Client;
 import javaeetutorial.batch.messagesender.items.Message;
-import lombok.extern.java.Log;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -10,14 +9,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import java.util.List;
 
-@Log
 public class MessageWriter implements ItemWriter {
     private String messageId;
-    private EntityManagerFactory emf;
     private NamedParameterJdbcTemplate jdbcTemplate;
     private String sql;
 
