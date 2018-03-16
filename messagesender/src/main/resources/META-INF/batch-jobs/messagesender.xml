@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="messagesender" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+    <properties>
+        <property name="log_file_name" value="log1.txt"/>
+        <property name="airtime_price" value="0.08"/>
+        <property name="tax_rate" value="0.07"/>
+    </properties>
+    <step id="bills">
+        <end on="COMPLETED"/>
+    </step>
+</job>

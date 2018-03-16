@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>The Phone Billing Example Application</title>
+    <h:outputStylesheet library="css" name="default.css"/>
+</h:head>
+<body>
+<h:form id="form">
+    <p:dataList value="#{dataListView.cars}" var="car" type="unordered" itemType="none" paginator="true" rows="10"
+                lazy="true" styleClass="paginated">
+        <f:facet name="header">
+            Paginator
+        </f:facet>
+        <p:panelGrid styleClass="message">
+            <p:row>
+                <p:column styleClass="message-datetime">
+                    <p:commandLink update=":form:carDetail" oncomplete="PF('carDialog').show()" title="View Detail"
+                                   styleClass="ui-icon ui-icon-search" style="float:left;margin-right:10px">
+                        <f:setPropertyActionListener value="#{car}" target="#{dataListView.selectedCar}"/>
+                    </p:commandLink>
+                    <p:commandLink value="Ajax Submit" id="ajax" actionListener="#{dataListView.addJob(car)}"
+                                     styleClass="ui-priority-primary"/>
+                </p:column>
+                <p:column styleClass="message-title">
+                    <h:outputText value="#{car.brand}, #{car.year}" style="display:inline-block"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column colspan="2" styleClass="message-text">
+                    <p:panelGrid >
+                        <h:outputText id="txt_count" value="#{car.state}" style="display:inline-block"/>
+                        <p:poll interval="2" update="txt_count"/>
+                    </p:panelGrid>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </p:dataList>
+
+    <p:dialog header="Car Info" widgetVar="carDialog" modal="true" showEffect="blind" hideEffect="explode"
+              resizable="false">
+        <p:outputPanel id="carDetail" style="text-align:center;">
+            <p:panelGrid columns="2" rendered="#{not empty dataListView.selectedCar}" columnClasses="label,value">
+                <f:facet name="header">
+                    <p:graphicImage name="demo/images/car/#{dataListView.selectedCar.brand}-big.gif"/>
+                </f:facet>
+
+                <h:outputText value="Id:"/>
+                <h:outputText value="#{dataListView.selectedCar.id}"/>
+
+                <h:outputText value="Year"/>
+                <h:outputText value="#{dataListView.selectedCar.year}"/>
+
+                <h:outputText value="Color:"/>
+                <h:outputText value="#{dataListView.selectedCar.color}"
+                              style="color:#{dataListView.selectedCar.color}"/>
+            </p:panelGrid>
+        </p:outputPanel>
+    </p:dialog>
+</h:form>
+</body>
+</html>

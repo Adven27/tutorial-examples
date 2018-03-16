@@ -1,0 +1,5 @@
+javaeetutorial\batch\messagesender\beans\JsfBean.class
+javaeetutorial\batch\messagesender\items\Message$MessageBuilder.class
+javaeetutorial\batch\messagesender\MessageWriter.class
+javaeetutorial\batch\messagesender\items\Client.class
+javaeetutorial\batch\messagesender\items\Message.class
